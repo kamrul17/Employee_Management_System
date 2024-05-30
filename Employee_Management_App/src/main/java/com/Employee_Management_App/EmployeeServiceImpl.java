@@ -2,6 +2,7 @@ package com.Employee_Management_App;
 
 
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.stereotype.Service;
 @Service
@@ -14,7 +15,7 @@ public EmployeeServiceImpl(EmployeeRepository employeeRepository) {
 		this.employeeRepository = employeeRepository;
 	}
 
-//List<Employee>emp=new ArrayList<>();
+
 
 	@Override
 	public List<Employee>  getAllEmployee() {
@@ -24,12 +25,10 @@ public EmployeeServiceImpl(EmployeeRepository employeeRepository) {
 
 	@Override
 	public Employee getEmployeeById(Long id) {
-		Employee emp=employeeRepository.findById(id).get();
-		if (emp!=null) {
-			return emp;
-		} else {
-			return null;
-		}
+		Optional<Employee> emp=employeeRepository.findById(id);
+		System.out.println(emp);
+		return emp.orElse(null);
+		
 	
 	}
 	@Override
@@ -44,21 +43,34 @@ public EmployeeServiceImpl(EmployeeRepository employeeRepository) {
 	}
 	@Override
 	public Boolean deleteEmployee(Long id) {
-		Employee emp=employeeRepository.findById(id).get();	
-	employeeRepository.delete(emp);
-		return true;
-	
+		Optional<Employee> emp=employeeRepository.findById(id);
+		if (emp.isPresent()) {
+			employeeRepository.deleteById(id);
+			return true;
+		} else {
+return false;
+		}
 		
 	}
 
 	@Override
 	public Boolean updateEmployee(Long id, Employee employee) {
-		Employee emp=employeeRepository.findById(id).get();
-		emp.setFirstName(employee.getFirstName());
-		emp.setLastName(employee.getLastName());
-		emp.setEmail(employee.getEmail());
-		employeeRepository.save(emp);
-	   return true;
+		Optional<Employee> emp=employeeRepository.findById(id);
+		System.out.println("Upodated========="+emp);
+		System.out.println(emp.equals(employee));
+		if (emp.isPresent()) {
+			Employee employ=emp.get();
+			employ.setFirstName(employee.getFirstName());
+			employ.setLastName(employee.getLastName());
+			employ.setEmail(employee.getEmail());
+			employeeRepository.save(employ);
+			 return true;
+		} else {
+			 return false;
+		}
+		
+		
+	  
 	}
 	
 
